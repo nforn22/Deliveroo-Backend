@@ -1,24 +1,17 @@
 const express = require("express");
-const axios = require("axios");
-const dotenv = require("dotenv");
-
-dotenv.config();
+const fs = require("fs");
+const path = require("path");
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const response = await axios.get(
-      "https://lereacteur-bootcamp-api.herokuapp.com/api/deliveroo/menu/paris/3eme-temple/sub-arc-subway-rambuteau?day=today&geohash=u09wj8rk5bqr&time=ASAP",
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.DELIVEROO_API_KEY}`
-        }
-      }
-    );
-    res.json(response.data);
+    const dataPath = path.join(__dirname, "../data/restaurantData.json");
+    const data = await fs.promises.readFile(dataPath, "utf8");
+    const jsonData = JSON.parse(data);
+    res.json(jsonData);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Error loading restaurant data" });
   }
 });
 
